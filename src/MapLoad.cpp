@@ -1,49 +1,10 @@
-#include <iostream>
+//
+// Created by godu on 2021/4/25.
+//
 
-#include "opencv2/highgui/highgui.hpp"
-#include <vector>
-#include <dirent.h>
-#include <string.h>
-#include <stdio.h>
-#include <fstream>
-#include "./include/Converter.h"
-#include "./include/MyDb.h"
-#include "./include/MyDbHelper.h"
-#include "./include/FeatureDto.h"
+#include "../include/MapLoad.h"
 
-using namespace std;
-
-vector<string> getFiles(string dirc) {
-    vector<string> files;
-    struct dirent *ptr;
-    char base[1000];
-    DIR *dir;
-    dir = opendir(dirc.c_str());
-    /*
-    if(dir == NULL){
-        perror("open dir error ...");
-        exit(1);
-    }*/
-    while ((ptr = readdir(dir)) != NULL) {
-        if (ptr->d_type == 8)//it;s file
-        {
-            files.push_back(dirc + '/' + ptr->d_name);
-        } else if (ptr->d_type == 10)//link file
-            continue;
-        else if (ptr->d_type == 4) {
-            files.push_back(ptr->d_name);
-        }
-    }
-    closedir(dir);
-    sort(files.begin(), files.end());
-    for (size_t i = 0; i < files.size(); ++i) {
-        cout << files[i] << endl;
-    }
-    return files;
-}
-
-
-void LoadKeyFrame(ifstream &f) {
+bool MapLoad::LoadKeyFrame(ifstream &f) {
     unsigned long nId;
     double TimeStamp;
     f.read((char *) &nId, sizeof(nId));
@@ -63,24 +24,16 @@ void LoadKeyFrame(ifstream &f) {
             T.at<float>(i, j) = R.at<float>(i, j);
     T.at<float>(3, 3) = 1;
 
-//    for ( int i = 0; i < 4; i ++ )
-//    {
-//      for ( int j = 0; j < 4; j ++ )
-//      {
-//              f.read((char*)&T.at<float>(i,j), sizeof(float));
-//              cerr<<"T.at<float>("<<i<<","<<j<<"):"<<T.at<float>(i,j)<<endl;
-//      }
-//    }
 
-// Read feature point number of current Key Frame
-// initkf.N 是 kf 中 关键点的个数
+    // Read feature point number of current Key Frame
+    // initkf.N 是 kf 中 关键点的个数
     int N;
     std::vector<cv::KeyPoint> vKps;
 
     f.read((char *) &N, sizeof(N));
-// reserve 是用来申请内存的
+    // reserve 是用来申请内存的
     vKps.reserve(N);
-// ORB 描述子是 32 维的,所以 cols = 32
+    // ORB 描述子是 32 维的,所以 cols = 32
     cv::Mat Descriptors;
 
     Descriptors.create(N, 32, CV_8UC1);
@@ -131,32 +84,11 @@ void LoadKeyFrame(ifstream &f) {
 
     cout << "Descriptors: " << endl;
     cout << Descriptors << endl;
+
+    return true;
 }
 
-int main(int argc, char **argv) {
-
-    FeatureDto * featureDto = new FeatureDto();
-    string id = featureDto->createFeature();
-    featureDto->name = 1L;
-    featureDto->imgId="kk";
-    string sqlk = featureDto->makeSqlValue();
-
-    MapInfoDto aMap;
-
-    aMap.createMap(1, 1.0);
-
-    MyDb db;
-
-    bool connected = db.initDB("localhost", "root", "passwd", "visual-db", 3306);
-    cout << "mysql is connected: " << connected << endl;
-    string sql = MyDbHelper::buildInsertMapInfo(aMap);
-    db.exeSQL(sql);
-
-    db.exeSQL("select * from tbl_map_info");
-
-
-    /*ifstream f;
-    f.open("/home/godu/Documents/orbslam-save-map/ORB_SLAM2/MapPointandKeyFrame.bin");
+bool MapLoad::LoadMappoint(ifstream &f) {
     unsigned long int nMapPoints;
     f.read((char *) &nMapPoints, sizeof(nMapPoints));
     printf("mappoint = %lu\n", nMapPoints);
@@ -172,17 +104,5 @@ int main(int argc, char **argv) {
         cout << Position.t() << endl;
     }
     cout << " map point 已经加载完毕! 总点数: " << nMapPoints << "个" << endl;
-
-    {
-        unsigned long int nKeyFrames;
-        f.read((char *) &nKeyFrames, sizeof(nKeyFrames));
-        cerr << "Map.cc :: The number of KeyFrames:" << nKeyFrames << endl;
-        for (unsigned int i = 0; i < nKeyFrames; i++) {
-            LoadKeyFrame(f);
-        }
-
-
-    }
-    f.close();*/
-
+    return true;
 }
