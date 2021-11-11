@@ -10,6 +10,9 @@
 #include "./include/MyDb.h"
 #include "./include/MyDbHelper.h"
 #include "./include/FeatureDto.h"
+#include "./include/MapLoad.h"
+#include "./include/SystemSetting.h"
+#include "./include/InitKeyFrame.h"
 
 using namespace std;
 
@@ -135,15 +138,12 @@ void LoadKeyFrame(ifstream &f) {
 
 int main(int argc, char **argv) {
 
-    FeatureDto * featureDto = new FeatureDto();
-    string id = featureDto->createFeature();
-    featureDto->name = 1L;
-    featureDto->imgId="kk";
-    string sqlk = featureDto->makeSqlValue();
 
     MapInfoDto aMap;
 
-    aMap.createMap(1, 1.0);
+    string mapId = "2c30ff9e-5734-4225-9506-721aec148e08";
+    aMap.id = mapId;
+    aMap.comment = "1002-1020 测绘学院走一圈";
 
     MyDb db;
 
@@ -152,37 +152,38 @@ int main(int argc, char **argv) {
     string sql = MyDbHelper::buildInsertMapInfo(aMap);
     db.exeSQL(sql);
 
+    cout << "tbl_map_info: " << endl;
     db.exeSQL("select * from tbl_map_info");
 
-
-    /*ifstream f;
+    auto *mapLoad = new MapLoad();
+    ifstream f;
     f.open("/home/godu/Documents/orbslam-save-map/ORB_SLAM2/MapPointandKeyFrame.bin");
-    unsigned long int nMapPoints;
-    f.read((char *) &nMapPoints, sizeof(nMapPoints));
-    printf("mappoint = %lu\n", nMapPoints);
-    for (unsigned int i = 0; i < nMapPoints; i++) {
-        cv::Mat Position(3, 1, CV_32F);
-        long unsigned int id;
-        f.read((char *) &id, sizeof(id));
-
-        f.read((char *) &Position.at<float>(0), sizeof(float));
-        f.read((char *) &Position.at<float>(1), sizeof(float));
-        f.read((char *) &Position.at<float>(2), sizeof(float));
-
-        cout << Position.t() << endl;
+    vector<MappointDto> mappointDtos = mapLoad->LoadMappoint(f, mapId);
+    for (const MappointDto &dto : mappointDtos) {
+        sql = MyDbHelper::buildInsertMappoint(dto);
+        db.exeSQL(sql);
     }
-    cout << " map point 已经加载完毕! 总点数: " << nMapPoints << "个" << endl;
 
-    {
-        unsigned long int nKeyFrames;
-        f.read((char *) &nKeyFrames, sizeof(nKeyFrames));
-        cerr << "Map.cc :: The number of KeyFrames:" << nKeyFrames << endl;
-        for (unsigned int i = 0; i < nKeyFrames; i++) {
-            LoadKeyFrame(f);
+//    string strVocFile = argv[1];
+//    SystemSetting *mySystemSetting = new SystemSetting();
+//    mySystemSetting->LoadSystemSetting(argv[2]);
+//    InitKeyFrame initkf(*mySystemSetting);
+
+    unsigned long int nKeyFrames;
+    f.read((char *) &nKeyFrames, sizeof(nKeyFrames));
+    cerr << "Map.cc :: The number of KeyFrames:" << nKeyFrames << endl;
+    for (int i = 0; i < nKeyFrames; i++) {
+        cout << "processing keyframe: " << i << "/" << nKeyFrames << endl;
+        auto featureDtos = mapLoad->LoadKeyFrame(f, mapId);
+        for (const FeatureDto &dto  : featureDtos) {
+            if (dto.size == 0.0 || dto.imgTimestamp < 0.10) {
+                continue;
+            }
+            sql = MyDbHelper::buildInsertFeature(dto);
+            db.exeSQL(sql);
         }
-
-
     }
-    f.close();*/
+    cout << "map loaded!" << endl;
+    f.close();
 
 }

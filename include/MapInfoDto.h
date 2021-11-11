@@ -16,6 +16,7 @@ public:
     int createTime;
     int sliceNum;
     double sliceParam;
+    string comment;
 
 public:
     MapInfoDto();

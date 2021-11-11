@@ -6,15 +6,16 @@
 #define MAP_REUSED_FEATUREDTO_H
 
 #include "string"
+#include "Constant.h"
 
 using namespace std;
 class FeatureDto {
 public:
     string id;
-    long name;
-    string imgId;
+    long kfId;
+    double imgTimestamp;
     string orbvec;
-    long mappointName;
+    unsigned long mappointName;
     string mapId;
     int createTime;
     float ptX;
@@ -30,8 +31,8 @@ public:
     ~FeatureDto();
 
     string createFeature();
-    string createFeature(long name, string imgId, string mapId);
-    string createFeature(long name, string imgId, string orbvec, long mappointName,
+    string createFeature(long name, double imgId, string mapId);
+    string createFeature(long name, double imgId, string orbvec, long mappointName,
                          string mapId, float pyX, float ptY, int size,
                          float angle, int response, int octave);
     string makeSqlValue();

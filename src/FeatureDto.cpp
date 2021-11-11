@@ -14,6 +14,8 @@
 using namespace std;
 
 FeatureDto::FeatureDto() {
+    this->ptX= Constant::DEFAULT_FLOAT;
+    this->ptY= Constant::DEFAULT_FLOAT;
 
 }
 
@@ -22,9 +24,9 @@ FeatureDto::~FeatureDto() {
 }
 
 string FeatureDto::makeSqlValue() {
-    boost::format fmt("('%s', %d, '%s', '%s', %d, '%s', %f, %f, %d, %f, %d, %d)");
-    fmt % id % name % imgId % orbvec % mappointName % mapId % ptX % ptY % size % angle % response % octave;
-    cout << fmt.str() << endl;
+    boost::format fmt("('%s', %d, '%.6lf', '%s', %d, '%s', %f, %f, %d, %f, %d, %d)");
+    fmt % id % kfId % imgTimestamp % orbvec % mappointName % mapId % ptX % ptY % size % angle % response % octave;
+//    cout << fmt.str() << endl;
     return fmt.str();
 }
 
@@ -36,13 +38,13 @@ string FeatureDto::createFeature() {
 }
 
 string
-FeatureDto::createFeature(long name, string imgId, string orbvec, long mappointName, string mapId, float pyX, float ptY,
+FeatureDto::createFeature(long name, double imgId, string orbvec, long mappointName, string mapId, float pyX, float ptY,
                           int size, float angle, int response, int octave) {
     if (id.empty()) {
         this->createFeature();
     }
-    this->name = name;
-    this->imgId = std::move(imgId);
+    this->kfId = name;
+    this->imgTimestamp = imgId;
     this->orbvec = orbvec;
     this->mappointName = mappointName;
     this->size = size;
@@ -51,11 +53,11 @@ FeatureDto::createFeature(long name, string imgId, string orbvec, long mappointN
     this->octave = octave;
 }
 
-string FeatureDto::createFeature(long name, string imgId, string mapId) {
+string FeatureDto::createFeature(long name, double imgId, string mapId) {
     if (id.empty()) {
         this->createFeature();
     }
-    this->name = name;
-    this->imgId = std::move(imgId);
+    this->kfId = name;
+    this->imgTimestamp = imgId;
     this->mapId = std::move(mapId);
 }

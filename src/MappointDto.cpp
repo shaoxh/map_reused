@@ -4,6 +4,7 @@
 
 #include "../include/MappointDto.h"
 #include <utility>
+#include "../include/Constant.h"
 
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -14,6 +15,9 @@
 using namespace std;
 
 MappointDto::MappointDto() {
+    this->x = Constant::DEFAULT_FLOAT;
+    this->y = Constant::DEFAULT_FLOAT;
+    this->z = Constant::DEFAULT_FLOAT;
 
 }
 
@@ -29,16 +33,23 @@ string MappointDto::createMappoint() {
 }
 
 string MappointDto::createMappoint(long name, string mapId) {
-    if (id.empty()){
+    if (id.empty()) {
         this->createMappoint();
     }
     this->name = name;
-    this->mapId = std::move(mapId);
+    this->mapId = mapId;
+    return id;
 }
+
 
 string MappointDto::makeSqlValue() {
     boost::format fmt("('%s', %d, '%s', %f, %f, %f)");
-    fmt % id % name % mapId % x % y % mapId % z ;
-    cout << fmt.str() << endl;
+    fmt % id % name % mapId % x % y % z;
     return fmt.str();
+}
+
+void MappointDto::makeMappointLocation(cv::Mat position) {
+    this->x = position.at<float>(0);
+    this->y = position.at<float>(1);
+    this->z = position.at<float>(2);
 }

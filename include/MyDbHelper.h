@@ -8,6 +8,8 @@
 #include "string"
 #include "MapInfoDto.h"
 #include "../include/MyDbHelper.h"
+#include "../include/FeatureDto.h"
+#include "../include/MappointDto.h"
 
 using namespace std;
 
@@ -20,7 +22,9 @@ public:
 
     static string buildInsertMapInfo(MapInfoDto mapInfoDto);
 
-    static string buildInsertFeature();
+    static string buildInsertFeature(FeatureDto featureDto);
+
+    static string buildInsertMappoint(MappointDto mappointDt);
 
 
 };

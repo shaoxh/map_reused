@@ -6,6 +6,7 @@
 #define MAP_REUSED_MAPPOINTDTO_H
 
 #include "string"
+#include "opencv/highgui.h"
 
 using namespace std;
 class MappointDto {
@@ -23,6 +24,7 @@ public:
 
     string createMappoint();
     string createMappoint(long name, string mapId);
+    void makeMappointLocation(cv::Mat position);
     string makeSqlValue();
 
 
