@@ -24,8 +24,8 @@ FeatureDto::~FeatureDto() {
 }
 
 string FeatureDto::makeSqlValue() {
-    boost::format fmt("('%s', %d, '%.6lf', '%s', %d, '%s', %f, %f, %d, %f, %d, %d)");
-    fmt % id % kfId % imgTimestamp % orbvec % mappointName % mapId % ptX % ptY % size % angle % response % octave;
+    boost::format fmt("(%d, '%.6lf', '%s', %d, '%s', %f, %f, %d, %f, %d, %d)");
+    fmt % kfId % imgTimestamp % orbvec % mappointName % mapId % ptX % ptY % size % angle % response % octave;
 //    cout << fmt.str() << endl;
     return fmt.str();
 }

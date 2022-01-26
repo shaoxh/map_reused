@@ -43,8 +43,8 @@ string MappointDto::createMappoint(long name, string mapId) {
 
 
 string MappointDto::makeSqlValue() {
-    boost::format fmt("('%s', %d, '%s', %f, %f, %f)");
-    fmt % id % name % mapId % x % y % z;
+    boost::format fmt("(%d, '%s', %f, %f, %f)");
+    fmt % name % mapId % x % y % z;
     return fmt.str();
 }
 

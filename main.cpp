@@ -141,10 +141,14 @@ int main(int argc, char **argv) {
 
     MapInfoDto aMap;
 
-    string mapId = "2c30ff9e-5734-4225-9506-721aec148e08";
-    aMap.id = mapId;
-    aMap.comment = "1002-1020 测绘学院走一圈";
 
+    string mapId = "2c30ff9e-5734-4225-9506-721aec148e08";
+    aMap.comment = "date1002-time1020 a circle around surveying college";
+
+    mapId = "038f5c6b-473a-9a54-d39a-867acc2832b7"; // for 1102 map build on 0126-2022
+    aMap.comment = "date1102-time1626 a circle around surveying college";
+
+    aMap.id = mapId;
     MyDb db;
 
     bool connected = db.initDB("localhost", "root", "passwd", "visual-db", 3306);
@@ -157,10 +161,12 @@ int main(int argc, char **argv) {
 
     auto *mapLoad = new MapLoad();
     ifstream f;
-    f.open("/home/godu/Documents/orbslam-save-map/ORB_SLAM2/MapPointandKeyFrame.bin");
+    f.open("/home/shawn/Documents/map-reused/MapPointandKeyFrame.bin");
+    cout << "loading map point from MapPointandKeyFrame.bin...";
     vector<MappointDto> mappointDtos = mapLoad->LoadMappoint(f, mapId);
     for (const MappointDto &dto : mappointDtos) {
         sql = MyDbHelper::buildInsertMappoint(dto);
+        cout<<"go map point sql: " << sql<<endl;
         db.exeSQL(sql);
     }
 
@@ -173,7 +179,7 @@ int main(int argc, char **argv) {
     f.read((char *) &nKeyFrames, sizeof(nKeyFrames));
     cerr << "Map.cc :: The number of KeyFrames:" << nKeyFrames << endl;
     for (int i = 0; i < nKeyFrames; i++) {
-        cout << "processing keyframe: " << i << "/" << nKeyFrames << endl;
+        cout << "processing keyframe: " << i << "/" << nKeyFrames << "..." << endl;
         auto featureDtos = mapLoad->LoadKeyFrame(f, mapId);
         for (const FeatureDto &dto  : featureDtos) {
             if (dto.size == 0.0 || dto.imgTimestamp < 0.10) {

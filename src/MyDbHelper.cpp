@@ -15,11 +15,11 @@ static const string TBL_MAP_INFO = "tbl_map_info";
 static const string MAP_INFO_COLUMNS = " (id, sliceNum, sliceParam, comment) ";
 
 static const string TBL_FEATURE = "tbl_feature";
-static const string FEATURE_COLUMNS = " (id, kfId, imgTimestamp, orbvec, mappointName, "
+static const string FEATURE_COLUMNS = " (kfId, imgTimestamp, orbvec, mappointName, "
                                       "mapId, ptX, ptY, size, angle, response, octave)";
 
 static const string TBL_MAPPOINT = "tbl_mappoint";
-static const string MAPPOINT_COLUMNS = " (id, name, mapId, x, y, z) ";
+static const string MAPPOINT_COLUMNS = " (name, mapId, x, y, z) ";
 
 MyDbHelper::MyDbHelper() {
 

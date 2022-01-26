@@ -31,4 +31,4 @@ add_executable(map-reused main.cpp src/Converter.cpp include/Converter.h src/MyD
 # Link your application with OpenCV libraries
 target_link_libraries(map-reused ${OpenCV_LIBS})
 target_link_libraries(map-reused libmysqlclient.so)
-target_link_libraries(map-reused /home/godu/CLionProjects/map-reused/Thirdparty/DBoW2/lib/libDBoW2.so)
+target_link_libraries(map-reused /home/shawn/Documents/map-reused/Thirdparty/DBoW2/lib/libDBoW2.so)
